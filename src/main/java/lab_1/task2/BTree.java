@@ -12,19 +12,10 @@ public class BTree{
         private List<Integer> keys;
         private List<Node> children;
 
-        private Node(int n) {
+        private Node() {
             isLeaf = true;
             keys = new ArrayList<Integer>();
             children = new ArrayList<Node>();
-        }
-
-
-        public boolean isLeaf() {
-            return isLeaf;
-        }
-
-        public void setLeaf(boolean leaf) {
-            isLeaf = leaf;
         }
     }
 
@@ -33,17 +24,16 @@ public class BTree{
 
     public BTree(int t){
         this.t = t;
-        root = new Node(t - 1);
+        root = new Node();
     }
 
     public void insert(int key){
         Node node = root;
-        if (node.keys.size() == 2 * t - 1){
-            root = new Node(t - 1);
+        if (node.keys.size() >= 2 * t - 1){
+            root = new Node();
             root.isLeaf = false;
             root.children = new ArrayList<Node>();
             root.children.add(node);
-            splitChildren(root,0);
             insertNonFull(root, key);
         }
         else
@@ -54,34 +44,34 @@ public class BTree{
         int i = node.keys.size();
         if (node.isLeaf){
             node.keys.add(key);
-            while (i >= 1 && key < node.keys.get(i - 1)){
+            while (i >= 1 && key <= node.keys.get(i - 1)){
                 node.keys.set(i, node.keys.get(i - 1));
                 i--;
             }
             node.keys.set(i, key);
         } else {
-            while (i >= 1 && key < node.keys.get(i - 1)) {
+            while (i >= 1 && key <= node.keys.get(i - 1)) {
                 i--;
             }
-            i++;
-            if (node.children.get(i - 1).keys.size() == 2 * t - 1){
-                splitChildren(node, i - 1);
-                if (key > node.keys.get(i - 1))
+//            i++;
+            insertNonFull(node.children.get(i), key);
+            if (node.children.get(i).keys.size() > 2 * t - 1){
+                splitChildren(node, i);
+                if (key > node.keys.get(i))
                     i++;
             }
-            insertNonFull(node.children.get(i - 1), key);
         }
     }
 
     public void splitChildren(Node node, int i) {
-        Node z = new Node(t - 1);
+        Node z = new Node();
         Node y = node.children.get(i);
         z.isLeaf = y.isLeaf;
-        for (int j = 0; j < t - 1; j++){
+        for (int j = 0; j <= t - 1; j++){
             z.keys.add(j, y.keys.get(j + t));
         }
         if (!y.isLeaf)
-            for(int j = 0; j < t; j++)
+            for(int j = 0; j <= t; j++)
                 z.children.add(j, y.children.get(j + t));
         int key = y.keys.get(t - 1);
         y.keys = y.keys.subList(0, t - 1);
