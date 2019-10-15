@@ -121,7 +121,23 @@ public class BTreeTest {
     }
 
     @Test
-    public void deleteAllKeys(){
+    public void deleteExistingKey(){
+        List<Integer> list = List.of(66,12, 34, 110, 8, 34,75,887, 2, 12,442, 2,11, 45, 21, 45, 75,23,57,22);
+        for (int key: list)
+            tree.insert(key);
+        boolean result = tree.delete(list.get(ThreadLocalRandom.current().nextInt(0, list.size() - 1)));
+        assertEquals(null, result, true);
+    }
+    @Test
+    public void deleteNonExistingKey(){
+        List<Integer> list = List.of(66,12, 34, 110, 8, 34,75,887, 2, 12,442, 2,11, 45, 21, 45, 75,23,57,22);
+        for (int key: list)
+            tree.insert(key);
+        boolean result = tree.delete(100000);
+        assertEquals(null, result, false);
+    }
+    @Test
+    public void deleteAllInsertedPredefinedKeys(){
         List<Integer> list = List.of(66,12, 34, 110, 8, 34,75,887, 2, 12,442, 2,11, 45, 21, 45, 75,23,57,22);
         for (int key: list)
             tree.insert(key);
@@ -131,8 +147,32 @@ public class BTreeTest {
     }
 
     @Test
-    public void insertRandomKeysAndDeleteAll(){
-        int range = ThreadLocalRandom.current().nextInt(1070, 1080);
+    public void deleteSomeOFInsertedPredefinedKeys(){
+        List<Integer> list = List.of(66,12, 34, 110, 8, 34,75,887, 2, 12,442, 2,11, 45, 21, 45, 75,23,57,22);
+        for (int key: list)
+            tree.insert(key);
+        tree.delete(66);
+        tree.delete(12);
+        tree.delete(34);
+        assertEquals(null, tree.toString(), "[11, 34, [2, [2], [8]], [21, [12], [22, 23]], [45, 75, [45], [57, 75], [110, 442, 887]]]");
+    }
+
+    @Test
+    public void deleteHundredRandomInsertedKeys(){
+        int range = 100;
+        List<Integer> list = new ArrayList<>(range);
+        for (int i = 0; i < range; i++)
+            list.add(ThreadLocalRandom.current().nextInt(-50, 50));
+        for (int key: list)
+            tree.insert(key);
+        for (int key: list)
+            tree.delete(key);
+        assertEquals(null, tree.toString(), "[]");
+
+    }
+    @Test
+    public void deleteThousandRandomInsertedKeys(){
+        int range = 1000;
         List<Integer> list = new ArrayList<>(range);
         for (int i = 0; i < range; i++)
             list.add(ThreadLocalRandom.current().nextInt(-50, 50));

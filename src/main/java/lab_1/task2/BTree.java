@@ -154,16 +154,18 @@ public class BTree{
 
 
 
-    public void delete(int key) {
-        delete(root, key);
+    public boolean delete(int key) {
+        return delete(root, key);
     }
 
-    private void delete(Node node, int key) {
+    private boolean delete(Node node, int key) {
         if (node.isLeaf) { // 1. If the key is in node and node is a leaf node, then delete the key from node.
             int i;
             if ((i = node.binarySearch(key)) != -1) { // key is i-th key of node if node contains key.
                 node.remove(i, LEFT_CHILD_NODE);
-            }
+                return true;
+            } else
+                return false;
         } else {
             int i;
             if ((i = node.binarySearch(key)) != -1) { // 2. If node is an internal node and it contains the key... (key is i-th key of node if node contains key)
@@ -177,7 +179,7 @@ public class BTree{
                         predecessorNode = predecessorNode.children.get(predecessorNode.keys.size());
                     }
                     node.keys.set(i, predecessorNode.keys.get(predecessorNode.keys.size() - 1));
-                    delete(erasureNode, node.keys.get(i));
+                    return delete(erasureNode, node.keys.get(i));
                 } else if (rightChildNode.keys.size() >= t) { // 2b. If the successor child node has at least T keys...
                     Node successorNode = rightChildNode;
                     Node erasureNode = successorNode; // Make sure not to delete a key from a node with only T - 1 elements.
@@ -186,13 +188,13 @@ public class BTree{
                         successorNode = successorNode.children.get(0);
                     }
                     node.keys.set(i, successorNode.keys.get(0));
-                    delete(erasureNode, node.keys.get(i));
+                    return delete(erasureNode, node.keys.get(i));
                 } else { // 2c. If both the predecessor and the successor child node have only T - 1 keys...
                     // If both of the two child nodes to the left and right of the deleted element have the minimum number of elements,
                     // namely T - 1, they can then be joined into a single node with 2 * T - 2 elements.
                     int medianKeyIndex = mergeNodes(leftChildNode, rightChildNode);
                     moveKey(node, i, RIGHT_CHILD_NODE, leftChildNode, medianKeyIndex); // Delete i's right child pointer from node.
-                    delete(leftChildNode, key);
+                    return delete(leftChildNode, key);
                 }
             } else { // 3. If the key is not resent in node, descent to the root of the appropriate subtree that must contain key...
                 // The method is structured to guarantee that whenever delete is called recursively on node "node", the number of keys
@@ -240,7 +242,7 @@ public class BTree{
                         }
                     }
                 }
-                delete(childNode, key);
+                return delete(childNode, key);
             }
         }
     }
@@ -285,7 +287,7 @@ public class BTree{
                 }
             }
             if (!srcNode.isLeaf) {
-                dstNode.children.add(/*offset + i,*/ srcNode.children.get(i));
+                dstNode.children.add(/*offset + i, */srcNode.children.get(i));
             }
         }
 

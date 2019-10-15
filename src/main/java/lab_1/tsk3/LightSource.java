@@ -19,7 +19,6 @@ public class LightSource extends SpaceObject {
     void SparkleAndStartSpreading(){
         if (!flash.isBright())
             throw new IllegalStateException("Should be bright");
-        flash.setBright(false);
 
         if (this.isSpreading())
             throw new IllegalStateException("Should not be spreading");
@@ -28,18 +27,16 @@ public class LightSource extends SpaceObject {
 
 
 
-    public Flash getFlash() {
+    Flash getFlash() {
         return flash;
     }
-
-    public void setFlash(Flash flash) {
+    void setFlash(Flash flash) {
         this.flash = flash;
     }
-    public boolean isSpreading() {
+    boolean isSpreading() {
         return isSpreading;
     }
-
-    public void setSpreading(boolean spreading) {
+    void setSpreading(boolean spreading) {
         isSpreading = spreading;
     }
 }
